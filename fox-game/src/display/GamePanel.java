@@ -1,5 +1,6 @@
 package display;
 
+import display.mechanics.Collision;
 import domain.Player;
 import tiles.TileManager;
 
@@ -41,11 +42,24 @@ public class GamePanel extends JPanel implements Runnable{
 
     KeyHandler keyHandler = new KeyHandler();
     Thread gameThread;
+    Collision collision = new Collision(this);
     Player player = new Player(this, keyHandler);
 
+    public TileManager getTileManager() {
+        return tileManager;
+    }
+
+    public Collision getCollision() {
+        return collision;
+    }
+
+    public void setCollision(Collision collision) {
+        this.collision = collision;
+    }
+
     //player default position
-    int playerX = 100;
-    int playerY = 100;
+    int playerX = 200;
+    int playerY = 200;
     int playerSpeed = 4;
     int FPS = 60;
     TileManager tileManager = new TileManager(this);

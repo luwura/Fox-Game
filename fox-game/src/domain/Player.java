@@ -12,33 +12,51 @@ public class Player extends Entity {
     GamePanel gamePanel;
     KeyHandler keyHandler;
     BufferedImage up1, up2, down1, down2, left1, left2, right1, right2;
-    String direction;
     private int spriteCounter = 0;
     private int spriteNumber = 1;
 
     public Player(GamePanel gamePanel, KeyHandler keyHandler) {
-        super(100, 100, 4);
+        super(200, 200, 4);
         this.gamePanel = gamePanel;
         this.keyHandler = keyHandler;
         getPlayerImage();
-        direction = "down";
     }
 
     public void update() {
         if(keyHandler.isUpPressed() || keyHandler.isDownPressed() || keyHandler.isLeftPressed() || keyHandler.isRightPressed()){
             if (keyHandler.isUpPressed()) {
-                direction = "up";
-                setY(getY() - getSpeed());
+                setDirection("up");
+                //setY(getY() - getSpeed());
             } else if (keyHandler.isDownPressed()) {
-                direction = "down";
-                setY(getY() + getSpeed());
+                setDirection("down");
+                //setY(getY() + getSpeed());
             } else if (keyHandler.isLeftPressed()) {
-                direction = "left";
-                setX(getX() - getSpeed());
+                setDirection("left");
+                //setX(getX() - getSpeed());
             } else if (keyHandler.isRightPressed()) {
-                direction = "right";
-                setX(getX() + getSpeed());
+                setDirection("right");
+                //setX(getX() + getSpeed());
             }
+            setCollisionOff();
+            gamePanel.getCollision().checkTile(this);
+
+            if(!collisionOn){
+                switch(getDirection()) {
+                    case "up":
+                        setY(getY() - getSpeed());
+                        break;
+                    case "down":
+                        setY(getY() + getSpeed());
+                        break;
+                    case "left":
+                        setX(getX() - getSpeed());
+                        break;
+                    case "right":
+                        setX(getX() + getSpeed());
+                        break;
+                }
+            }
+
             spriteCounter++;
             if (spriteCounter > 15) {
                 if (spriteNumber == 1) {
@@ -53,7 +71,7 @@ public class Player extends Entity {
 
     public void draw(Graphics2D g) {
         BufferedImage image = null;
-        switch (direction) {
+        switch (getDirection()) {
             case "up":
                 image = (spriteNumber == 1) ? up1 : up2;
                 break;

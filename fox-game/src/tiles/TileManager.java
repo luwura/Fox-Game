@@ -14,6 +14,7 @@ public class TileManager {
     private GamePanel gamePanel;
     private Tile[] tiles;
     private Map<String, int[][]> mapChunks;
+
     private int currentChunkX;
     private int currentChunkY;
 
@@ -34,12 +35,14 @@ public class TileManager {
 
             tiles[1] = new Tile();
             tiles[1].image = ImageIO.read(getClass().getResourceAsStream("/tiles/round-tree.png"));
+            tiles[1].setCollisionTrue();
 
             tiles[2] = new Tile();
             tiles[2].image = ImageIO.read(getClass().getResourceAsStream("/tiles/dirt.png"));
 
             tiles[3] = new Tile();
             tiles[3].image = ImageIO.read(getClass().getResourceAsStream("/tiles/shop.png"));
+            tiles[3].setCollisionTrue();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -48,11 +51,6 @@ public class TileManager {
     private void loadInitialMapChunks() {
         // Load the initial chunk
         loadMapChunk(0, 0, "map-0-0.txt");
-        // Preload adjacent chunks if needed
-//        loadMapChunk(1, 0, "map--1-0.txt");
-//        loadMapChunk(-1, 0, "map--1-0.txt");
-//        loadMapChunk(0, 1, "map-0-1.txt.txt");
-//        loadMapChunk(0, -1, "map-0--1.txt");
     }
 
     private void loadMapChunk(int chunkX, int chunkY, String mapName) {
@@ -61,28 +59,28 @@ public class TileManager {
             URL url = getClass().getResource(path);
             BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
 
-            int[][] mapTileNumbers = new int[gamePanel.getMaxScreenCols()][gamePanel.getMaxScreenRows()];
-
+            int[][] newMapTileNumbers = new int[gamePanel.getMaxScreenCols()][gamePanel.getMaxScreenRows()];
             String line;
             int row = 0;
             while ((line = br.readLine()) != null && row < gamePanel.getMaxScreenRows()) {
                 String[] numbers = line.split(" ");
                 for (int col = 0; col < gamePanel.getMaxScreenCols(); col++) {
                     int tileNum = Integer.parseInt(numbers[col]);
-                    mapTileNumbers[col][row] = tileNum;
+                    newMapTileNumbers[col][row] = tileNum;
                 }
                 row++;
             }
             br.close();
 
-            mapChunks.put(chunkX + "," + chunkY, mapTileNumbers);
+            mapChunks.put(chunkX + "," + chunkY, newMapTileNumbers);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public void changeChunk(int newChunkX, int newChunkY) {
-        if (!mapChunks.containsKey(newChunkX + "," + newChunkY)) {
+        String newChunkKey = newChunkX + "," + newChunkY;
+        if (!mapChunks.containsKey(newChunkKey)) {
             // Load new chunk if not already loaded
             String mapName = "map-" + newChunkX + "-" + newChunkY + ".txt";
             loadMapChunk(newChunkX, newChunkY, mapName);
@@ -97,6 +95,12 @@ public class TileManager {
 
     public int getCurrentChunkY() {
         return currentChunkY;
+    }
+    public int[][] getMapTileNumbers() {
+        return mapChunks.get(currentChunkX + "," + currentChunkY);
+    }
+    public Tile[] getTiles() {
+        return tiles;
     }
 
     public void draw(Graphics2D g) {
