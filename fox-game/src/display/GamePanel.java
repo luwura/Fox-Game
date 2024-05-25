@@ -1,7 +1,7 @@
 package display;
 
 import domain.Player;
-import domain.TileManager;
+import tiles.TileManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -96,5 +96,28 @@ public class GamePanel extends JPanel implements Runnable{
     }
     public void update() {
         player.update();
+        checkForChunkChange();
+    }
+
+    public void checkForChunkChange() {
+        int playerX = player.getX();
+        int playerY = player.getY();
+        int tileSize = getTileSize();
+        int maxCols = getMaxScreenCols();
+        int maxRows = getMaxScreenRows();
+
+        if (playerX < 0) {
+            tileManager.changeChunk(tileManager.getCurrentChunkX() - 1, tileManager.getCurrentChunkY());
+            player.setX((maxCols - 1) * tileSize);
+        } else if (playerX >= maxCols * tileSize) {
+            tileManager.changeChunk(tileManager.getCurrentChunkX() + 1, tileManager.getCurrentChunkY());
+            player.setX(0);
+        } else if (playerY < 0) {
+            tileManager.changeChunk(tileManager.getCurrentChunkX(), tileManager.getCurrentChunkY() - 1);
+            player.setY((maxRows - 1) * tileSize);
+        } else if (playerY >= maxRows * tileSize) {
+            tileManager.changeChunk(tileManager.getCurrentChunkX(), tileManager.getCurrentChunkY() + 1);
+            player.setY(0);
+        }
     }
 }
